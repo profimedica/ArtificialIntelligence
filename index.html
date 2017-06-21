@@ -1,0 +1,49 @@
+<center>
+
+<h1>Artificial Intelligence</h1>
+<textarea id='UserInput' onkeyup=' ProcessInput()'>Sisi is </textarea>
+<input id='AnswareArea' name='AnswareArea'></input>
+<script>
+var MyLanguage = 
+{
+	"Sisi" :
+	{
+		"is a" : [ "Cat", "sweety" ],
+		"is" : [ "white", "chill" ],
+		"has" : [ "4 paws", "white fur" ]
+	},
+	"Rex" :
+	{
+		"is a" : [ "Dog", "badass" ],
+		"is" : [ "terrifying", "giant" ],
+		"has" : [ "a gross voice", "ticks" ]
+	}
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * (max - 0 + 1)) + 0;
+}
+
+function getObjects(root, fragments, i, prefix)
+{
+	var entryLevel = root[root+fragments[i]];
+	var advanced = 
+}
+
+function ProcessInput()
+{
+	var UserInput = document.getElementById('UserInput').value;
+	var AnswareArea0 = document.getElementById('AnswareArea'); 
+	
+	var Fragments = UserInput.split(' ');
+	// for(var i = 0; i<Fragments.length; i++)
+	{
+		var options = getObjects(MyLanguage, Fragments, 0, "");// MyLanguage[Fragments[0]][Fragments[1]];
+	 AnswareArea0.value = options[getRandomInt(options.length-1)];
+	}
+}
+
+ProcessInput();
+</script>
+
+</center>
