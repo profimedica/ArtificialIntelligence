@@ -20,30 +20,57 @@ var MyLanguage =
 	}
 }
 
+var UserInput = document.getElementById('UserInput');
+var AnswareArea0 = document.getElementById('AnswareArea'); 
+	
+
 function getRandomInt(max) {
     return Math.floor(Math.random() * (max - 0 + 1)) + 0;
 }
 
 function getObjects(root, fragments, i, prefix)
 {
-	var entryLevel = root[root+fragments[i]];
-	var advanced = 
+	var entryLevel = root[prefix+fragments[i]];
+	if(i+1<fragments.length && root)
+	{
+		var advanced = getObjects(root, fragments, i+1, prefix+fragments[i]+" ");
+	}
+	//if(advanced)
+	{
+		return advanced ? advanced : entryLevel;
+	}
 }
 
 function ProcessInput()
 {
-	var UserInput = document.getElementById('UserInput').value;
-	var AnswareArea0 = document.getElementById('AnswareArea'); 
-	
-	var Fragments = UserInput.split(' ');
-	// for(var i = 0; i<Fragments.length; i++)
+	var Fragments = UserInput.value.split(' ');
 	{
-		var options = getObjects(MyLanguage, Fragments, 0, "");// MyLanguage[Fragments[0]][Fragments[1]];
-	 AnswareArea0.value = options[getRandomInt(options.length-1)];
+		var subject = getObjects(MyLanguage, Fragments, 0, "");
+		var linker = getObjects(subject, Fragments, 1, "");
+		if(linker)
+		{
+			AnswareArea0.value = linker[getRandomInt(linker.length-1)];
+		}
+		else
+		{
+			AnswareArea0.value = "";
+		}
 	}
 }
 
 ProcessInput();
 </script>
-
+<hr>
+Try to type from examples:
+<br>
+Sisi is<br>
+Sisi has<br>
+Sisi is a<br>
+Rex is<br>
+Rex has<br>
+Rex is a<br>
+<hr>
+How it works?
+<br>
+JSON processing: root[prefix+fragments[i]]
 </center>
