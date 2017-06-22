@@ -1,31 +1,121 @@
 <center>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <h1>Artificial Intelligence</h1>
-<textarea id='UserInput' onkeyup=' ProcessInput()'>Sisi is </textarea>
-<input id='AnswareArea' name='AnswareArea'></input>
+
+<table style='width: 800px'>
+	<tr>
+		<td style='text-align:right; width: 200px'>Learning from: </td><td><input style='width: 100%' id="LearningLinkHolder"></td>
+	</tr>
+	<tr>
+		<td style='text-align:right; width: 200px'>Number of symbols: </td><td><input style='width: 100%' id="NumberOfSymbolsHolder"></td>
+	</tr>
+	<tr>
+		<td style='text-align:right; width: 200px'>Used as linker: </td><td><input style='width: 100%' id="LinkerExpressionHolder"></td>
+	</tr>
+	<tr>
+		<td style='text-align:right; width: 200px'>Computed answare: </td><td><input style='width: 100%' id='AnswareArea'></td>
+	</tr>
+	<tr>
+		<td style='text-align:right; width: 200px'>User input: </td><td><input style='width: 100%' id='UserInputHolder'></td>
+	</tr>
+</table>
 <script>
-var MyLanguage = 
+var LearningTexts = [];
+var LearningLinks = 
+	[
+		'http://localhost:85/EraseMe/Molecule.html',
+		'http://localhost:85/EraseMe/History.html'
+	];
+
+var KnowledgeObject = 
 {
 	"Sisi" :
 	{
 		"is a" : [ "Cat", "sweety" ],
+		"the" : [ "best cat", "white cat" ],
 		"is" : [ "white", "chill" ],
 		"has" : [ "4 paws", "white fur" ]
 	},
 	"Rex" :
 	{
 		"is a" : [ "Dog", "badass" ],
+		"the" : [ "best dog", "giant dog" ],
 		"is" : [ "terrifying", "giant" ],
 		"has" : [ "a gross voice", "ticks" ]
 	}
 }
 
-var UserInput = document.getElementById('UserInput');
+function getFileContent(url)
+{
+	
+	$.ajax(
+	{
+		type: "POST",
+		url: url
+	})
+	.done(function(a, b, c) 
+	{
+		var el = $("<div/>");
+		el.html(a);
+		LearningTexts.push(el[0].innerText);
+		ProcessKnowledge(LearningTexts.length-1);
+		NumberOfSymbolsHolder.val(NumberOfSymbols);
+	})
+	.fail(function(a, b, c) 
+	{
+		//alert( "error" );
+	});
+	
+	/*	type: "POST",
+		url: url,
+		data: data,
+		success: success,
+		dataType: dataType
+	*/
+}
+
+var LinkerExpression = 'the';
+var UserInput = 'Sisi the';
 var AnswareArea0 = document.getElementById('AnswareArea'); 
+var LearningLinkHolder;
+var LinkerExpressionHolder;
+var NumberOfSymbolsHolder;
+var NumberOfSymbols = 0;
+var reversed = false; // if relation has to be stored as reversed
 	
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * (max - 0 + 1)) + 0;
+}
+
+function ProcessKnowledge(index)
+{
+	var Fragments = LearningTexts[index].split(' '+LinkerExpression+' ');
+	for(var i=1; i<Fragments.length; i++)
+	{
+		var lastWord = Fragments[i-1].substring(Fragments[i-1].lastIndexOf(' ')+1);
+		var nextWord = Fragments[i].substring(0, Fragments[i].indexOf(' '));
+		if(reversed)
+		{
+			if(!KnowledgeObject[nextWord])
+			{
+				KnowledgeObject[nextWord] = {  }; KnowledgeObject[nextWord][LinkerExpression] = [];
+			}
+			KnowledgeObject[nextWord][LinkerExpression].push(lastWord);
+		}
+		else
+		{
+			if(!KnowledgeObject[lastWord])
+			{
+				KnowledgeObject[lastWord] = {  }; KnowledgeObject[lastWord][LinkerExpression] = [];
+			}
+			KnowledgeObject[lastWord][LinkerExpression].push(nextWord);
+		}
+		NumberOfSymbols++;
+	}
+	var str = JSON.stringify(KnowledgeObject, null, 2);
+	$('#KnowledgeObjectPresenter').val(str);
 }
 
 function getObjects(root, fragments, i, prefix)
@@ -43,9 +133,9 @@ function getObjects(root, fragments, i, prefix)
 
 function ProcessInput()
 {
-	var Fragments = UserInput.value.split(' ');
+	var Fragments = UserInput.split(' ');
 	{
-		var subject = getObjects(MyLanguage, Fragments, 0, "");
+		var subject = getObjects(KnowledgeObject, Fragments, 0, "");
 		var linker = getObjects(subject, Fragments, 1, "");
 		if(linker)
 		{
@@ -58,19 +148,50 @@ function ProcessInput()
 	}
 }
 
-ProcessInput();
+$( document ).ready(function() {
+	// Collect UI elements
+	LearningLinkHolder = $('#LearningLinkHolder');
+	NumberOfSymbolsHolder = $('#NumberOfSymbolsHolder');
+	LinkerExpressionHolder = $('#LinkerExpressionHolder');
+	UserInputHolder = $('#UserInputHolder');
+
+	// Initialize UI
+	LearningLinkHolder.change(function(){
+		LearningLink = LearningLinkHolder.val();
+		getFileContent(LearningLink);
+	}); 
+	
+	UserInputHolder.keyup(function(a, b, c){
+		UserInput = UserInputHolder.val();
+		ProcessInput();
+	});
+	UserInputHolder.val('Sisi the');
+	
+	LinkerExpressionHolder.val(LinkerExpression);
+	LinkerExpressionHolder.keyup(function(a, b, c){
+		KnowledgeObject = {};
+		LinkerExpression = LinkerExpressionHolder.val().trim();
+		NumberOfSymbols = 0;
+		for(var i=0; i<LearningTexts.length; i++)
+		{
+			ProcessKnowledge(i);
+		}
+		NumberOfSymbolsHolder.val(NumberOfSymbols);
+	}); 
+	
+	LearningLinkHolder.val(LearningLinks[0]).change();	
+	LearningLinkHolder.val(LearningLinks[1]).change();	
+	
+	ProcessInput();
+});
+
 </script>
 <hr>
-Try to type from examples:
-<br>
-Sisi is<br>
-Sisi has<br>
-Sisi is a<br>
-Rex is<br>
-Rex has<br>
-Rex is a<br>
 <hr>
 How it works?
 <br>
 JSON processing: root[prefix+fragments[i]]
 </center>
+
+<textarea id='KnowledgeObjectPresenter' style='width: 100%; height: 600px'>KnowledgeObjectPresenter</textarea>
+
