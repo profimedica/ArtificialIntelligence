@@ -5,7 +5,7 @@
 
 <table style='width: 800px'>
 	<tr>
-		<td style='text-align:right; width: 200px'>Learning from: </td><td><input style='width: 100%' id="LearningLinkHolder"></td>
+		<td style='text-align:right; width: 200px'>Learning from: </td><td><input style='width: 100%' id="LearningLinkHolder" value="You can suggest a URL, but here, on github, won;t work. Clone this page on your local to use this feature!"></td>
 	</tr>
 	<tr>
 		<td style='text-align:right; width: 200px'>Number of symbols: </td><td><input style='width: 100%' id="NumberOfSymbolsHolder"></td>
@@ -178,8 +178,8 @@ $( document ).ready(function() {
 		NumberOfSymbolsHolder.val(NumberOfSymbols);
 	}); 
 	
-	LearningLinkHolder.val(LearningLinks[0]).change();	
-	LearningLinkHolder.val(LearningLinks[1]).change();	
+	//LearningLinkHolder.val(LearningLinks[0]).change();	
+	//LearningLinkHolder.val(LearningLinks[1]).change();	
 	
 	LearningTexts.push(`The Project Gutenberg EBook of A Tale of Two Cities, by Charles Dickens
 
@@ -16455,8 +16455,10 @@ Archive Foundation, how to help produce our new eBooks, and how to
 subscribe to our email newsletter to hear about new eBooks.
 
 `);
-	
-	ProcessInput();
+
+	ProcessKnowledge(0);
+	NumberOfSymbolsHolder.val(NumberOfSymbols);
+		ProcessInput();
 });
 
 </script>
